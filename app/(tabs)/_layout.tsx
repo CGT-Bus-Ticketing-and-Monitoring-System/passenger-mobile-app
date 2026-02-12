@@ -1,8 +1,7 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import { View, StyleSheet} from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import HomeHeader from '../../components/HomeHeader';
@@ -37,7 +36,7 @@ export default function Layout() {
           },
         }}>
         <Tabs.Screen
-          name="index"
+          name="home"
           options={{
             title: 'Home',
             tabBarIcon: ({ color}) => (
@@ -68,7 +67,7 @@ export default function Layout() {
           options={{
             title: 'Profile',
             tabBarIcon: ({ color }) => (
-              <Ionicons name="person-circle" size={24} color={color} />
+              <FontAwesome5 name="user-circle" size={24} color={color} />
             ),
           }} />
       </Tabs>
