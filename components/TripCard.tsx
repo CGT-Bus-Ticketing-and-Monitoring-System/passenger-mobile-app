@@ -8,7 +8,7 @@ interface TripCardProps {
   path: string;
   date: string;
   time: string;
-  status: 'Active' | 'Completed' | 'Cancelled'; // Strict status types
+  status: 'ACTIVE' | 'Completed' | 'Cancelled'; // Strict status types
 }
 
 const TripCard: React.FC<TripCardProps> = ({ id, route, path, date, time, status }) => {
@@ -16,7 +16,7 @@ const TripCard: React.FC<TripCardProps> = ({ id, route, path, date, time, status
 //Status badge color logic based on trip status
   const getStatusStyle = () => {
     switch (status) {
-      case 'Active': return { backgroundColor: '#E66A1F' };
+      case 'ACTIVE': return { backgroundColor: '#E66A1F' };
       case 'Completed': return { backgroundColor: '#139456' };
       case 'Cancelled': return { backgroundColor: '#ED1C24' };
       default: return { backgroundColor: '#888' };
