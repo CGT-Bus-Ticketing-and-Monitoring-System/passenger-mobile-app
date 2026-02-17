@@ -1,5 +1,5 @@
 import React,{useState, useEffect} from "react";
-import { View, StyleSheet, ActivityIndicator, Alert, Text } from "react-native";
+import { View, StyleSheet, ActivityIndicator, Text } from "react-native";
 import MapView, {Marker, UrlTile} from "react-native-maps";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import * as Location from "expo-location";
@@ -32,7 +32,10 @@ export default function HomeScreen() {
 
   useEffect(() => {
     fetchAllBuses();
-    const interval = setInterval(() => fetchAllBuses, 2000); // Fetch every 2 seconds
+    const interval = setInterval(() => {
+      fetchAllBuses();
+    }, 2000); // Fetch every 2 seconds
+    
     return () => clearInterval(interval); // Cleanup on unmount
   }, [userLocation]);
 

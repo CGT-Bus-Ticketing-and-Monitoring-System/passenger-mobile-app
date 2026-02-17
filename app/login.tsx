@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform, ActivityIndicator } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, Stack } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { StackScreen } from "react-native-screens";
 
 export default function LoginScreen() {
     const router = useRouter();
@@ -60,6 +61,8 @@ export default function LoginScreen() {
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             style={styles.container}
         >
+            <Stack.Screen options={{headerShown: false}}/>
+
             <View style={styles.card}>
                 <Text style={styles.headertitle}>Login</Text>
 
