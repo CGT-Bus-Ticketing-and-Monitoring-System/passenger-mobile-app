@@ -129,7 +129,12 @@ export default function HomeScreen() {
           <Marker 
             key={index}
             coordinate={{ latitude: bus.latitude, longitude: bus.longitude}}
-            onPress={() => setSelectedBus(bus)}
+            zIndex={10}
+            tracksInfoWindowChanges={false}
+            onPress={(e) => {
+              e.stopPropagation(); 
+              setSelectedBus(bus);
+            }}
           >
             <View style={styles.busMarker}>
               <FontAwesome5 name="bus" size={16} color="white" />

@@ -20,18 +20,93 @@ export default function ProfileScreen() {
 
   const loadUserData = async () => {
     try {
-      const storedData = await AsyncStorage.getItem("userData");
-      if (storedData) {
-        setUser(JSON.parse(storedData));
+      const storageData = await AsyncStorage.getItem("userData");
+      if (storageData) {
+        setUser(JSON.parse(storageData));
+      }
+
+      const token = await AsyncStorage.getItem("userToken");
+      if (token) {
+        const timestamp = new Date().getTime();
+        const API_URL = `${process.env.EXPO_PUBLIC_API_URL}/api/passenger/profile?t=${timestamp}`;
+
+        const response = await fetch(API_URL, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const freshData = await response.json();
+          setUser(freshData);
+          await AsyncStorage.setItem("userData", JSON.stringify(freshData));
+        }
       }
     } catch (error) {
-      console.log("Failed to Load User:", error);
+      console.log("Failed to Sync live user data:", error);
     }
     finally {
       setLoading(false);
       setRefreshing(false);
     }
   };
+
+  /*const loadUserData = async () => {
+    console.log("====================================");
+    console.log("🔄 STARTING LIVE PULL-TO-REFRESH 🔄");
+    try {
+      // 1. Load the local snapshot
+      const storedData = await AsyncStorage.getItem("userData");
+      if (storedData) {
+        setUser(JSON.parse(storedData));
+        console.log("📱 Loaded old data from AsyncStorage");
+      }
+
+      // 2. Get the token
+      const token = await AsyncStorage.getItem("userToken");
+      console.log("🔑 Token exists?", !!token);
+
+      if (token) {
+        // Force the URL to bypass the Android network cache
+        const timestamp = new Date().getTime();
+        const API_URL = `${process.env.EXPO_PUBLIC_API_URL}/api/passenger/profile?t=${timestamp}`; 
+        
+        console.log("🌐 Hitting Backend URL:", API_URL);
+
+        // 3. Make the API request
+        const response = await fetch(API_URL, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        console.log("🚦 Backend Status Code:", response.status);
+
+        if (response.ok) {
+          const freshData = await response.json();
+          console.log("✅ SUCCESS! Fresh Balance is:", freshData.balance);
+          setUser(freshData); 
+          await AsyncStorage.setItem("userData", JSON.stringify(freshData)); 
+        } else {
+          const errorText = await response.text();
+          console.log("❌ SERVER REJECTED THE REQUEST:", errorText);
+        }
+      } else {
+        console.log("⚠️ No token found in AsyncStorage! User is basically logged out.");
+      }
+    } catch (error) {
+      console.log("💥 MASSIVE NETWORK CRASH:", error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false); 
+      console.log("🏁 PULL-TO-REFRESH FINISHED 🏁");
+      console.log("====================================");
+    }
+  };*/
 
   useFocusEffect(
     useCallback(() => {
