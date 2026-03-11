@@ -4,27 +4,43 @@ import TripCard from '../../components/TripCard';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from 'expo-router';
+import { useCallback } from 'react';
 
+interface Trip {
+  registration_number: string;
+  start_location: string;
+  end_location: string;
+  start_time: string;
+  status: 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
+}
 
 export default function TripsScreen() {
   
-  const [activeTrip, setActiveTrip] = useState(null);
-  const [completedTrips, setCompletedTrips] = useState([]);
+  const [activeTrip, setActiveTrip] = useState<Trip | null>(null);
+  const [completedTrips, setCompletedTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(null);
-  const [canceldTrips , setCancelTrip] = useState([]);
+  const [cancelledTrips , setCancelledTrip] = useState<Trip[]>([]);
 
-  useEffect(() => {
-    const loadTrips = async () => {
+  useFocusEffect(
+    useCallback(() => {
+      const loadTrips = async () => {
       try {
         const userdata = await AsyncStorage.getItem("userData");
 
+        let id = null; 
+
         if(userdata) {
           const user = JSON.parse(userdata);
-          const id = user.id;
+          id = user.id;
           setUserId(id);
         }
 
+        if (!id) {
+          setLoading(false);
+          return;
+        }
 
         // ACTIVE TRIP
         const activeRes = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/trip/active/${id}`);
@@ -32,6 +48,9 @@ export default function TripsScreen() {
 
         if (activeData.success) {
           setActiveTrip(activeData.data);
+        }
+        else {
+          setActiveTrip(null);
         }
 
         // COMPLETED TRIPS
@@ -41,15 +60,12 @@ export default function TripsScreen() {
         if (historyData.success) {
           setCompletedTrips(historyData.data);
         }
-
-        setLoading(false);
-
         
         const cancleRes = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/trip/cancel/${id}`);
         const cancleData = await cancleRes.json();
 
         if(cancleData.success){
-          setCancelTrip(cancleData.data);
+          setCancelledTrip(cancleData.data);
         }
 
         setLoading(false);
@@ -58,12 +74,11 @@ export default function TripsScreen() {
           console.log(err);
           setLoading(false);
         }
+      };
 
-    };
-
-    loadTrips();
-  }, []);
-
+      loadTrips();
+    }, [])
+  );
 
 
   return (
@@ -89,6 +104,7 @@ export default function TripsScreen() {
 
         {completedTrips.map((trip, index) => (
           <TripCard
+            key={index}
             id={trip.registration_number}
             route={trip.start_location + " → " + trip.end_location}
             path={trip.start_location + " to " + trip.end_location}
@@ -98,7 +114,7 @@ export default function TripsScreen() {
             />
           ))}
 
-        {canceldTrips.map((tripcan, index) => (
+        {cancelledTrips.map((tripcan, index) => (
           <TripCard
             key={index}
             id={tripcan.registration_number}
@@ -110,9 +126,6 @@ export default function TripsScreen() {
           />
 
         ))}
-
-        {userId && <Text style={{ marginTop: 20 }}>Hello, User #{userId}</Text>}
-
 
       </ScrollView>
     </SafeAreaView>
