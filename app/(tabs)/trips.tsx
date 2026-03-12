@@ -80,6 +80,7 @@ export default function TripsScreen() {
     }, [])
   );
 
+  const MAX_VISIBLE_TRIPS = 3;
 
   return (
     <SafeAreaView style={styles.SafeAreaView}>
@@ -99,33 +100,42 @@ export default function TripsScreen() {
 
         {!activeTrip && !loading && <Text>No active trips at the moment.</Text>}
 
-        <Text style={[styles.sectionLabel, { marginTop: 20 }]}>Recent Trip History</Text>
+        <Text style={[styles.sectionLabel, { marginTop: 23 }]}>Recent Trip History</Text>
         <View style={styles.divider} />
 
-        {completedTrips.map((trip, index) => (
-          <TripCard
-            key={index}
-            id={trip.registration_number}
-            route={trip.start_location + " → " + trip.end_location}
-            path={trip.start_location + " to " + trip.end_location}
-            date={new Date(trip.start_time).toLocaleDateString()}
-            time={new Date(trip.start_time).toLocaleTimeString()}
-            status={trip.status}
+
+        <View style={{maxHeight: completedTrips.length > MAX_VISIBLE_TRIPS ? 300 : 'auto' , marginTop : 10}}>
+          <ScrollView>
+            {completedTrips.map((trip, index) => (
+              <TripCard
+                key={index}
+                id={trip.registration_number}
+                route={trip.start_location + " → " + trip.end_location}
+                path={trip.start_location + " to " + trip.end_location}
+                date={new Date(trip.start_time).toLocaleDateString()}
+                time={new Date(trip.start_time).toLocaleTimeString()}
+                status={trip.status}
+                />
+              ))}
+          </ScrollView>
+        </View>
+
+        <View style={{marginTop : 30 , marginBottom : 10}}>
+          {cancelledTrips.map((tripcan, index) => (
+            <TripCard
+              key={index}
+              id={tripcan.registration_number}
+              route={tripcan.start_location + " → " + tripcan.end_location}
+              path={tripcan.start_location + " to " + tripcan.end_location}
+              date={new Date(tripcan.start_time).toLocaleDateString()}
+              time={new Date(tripcan.start_time).toLocaleTimeString()}
+              status={tripcan.status}
             />
+
           ))}
+        </View>
 
-        {cancelledTrips.map((tripcan, index) => (
-          <TripCard
-            key={index}
-            id={tripcan.registration_number}
-            route={tripcan.start_location + " → " + tripcan.end_location}
-            path={tripcan.start_location + " to " + tripcan.end_location}
-            date={new Date(tripcan.start_time).toLocaleDateString()}
-            time={new Date(tripcan.start_time).toLocaleTimeString()}
-            status={tripcan.status}
-          />
 
-        ))}
 
       </ScrollView>
     </SafeAreaView>
