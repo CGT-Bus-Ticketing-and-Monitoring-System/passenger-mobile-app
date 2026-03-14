@@ -23,62 +23,70 @@ export default function TripsScreen() {
   const [userId, setUserId] = useState(null);
   const [cancelledTrips , setCancelledTrip] = useState<Trip[]>([]);
 
+  const loadTrips = useCallback(async () => {
+    try {
+      const userdata = await AsyncStorage.getItem("userData");
+
+      let id = null; 
+
+      if(userdata) {
+        const user = JSON.parse(userdata);
+        id = user.id;
+        setUserId(id);
+      }
+
+      if (!id) {
+        setLoading(false);
+        return;
+      }
+
+      // ACTIVE TRIP
+      const activeRes = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/trip/active/${id}`);
+      const activeData = await activeRes.json();
+
+      if (activeData.success) {
+        setActiveTrip(activeData.data);
+      }
+      else {
+        setActiveTrip(null);
+      }
+
+      // COMPLETED TRIPS
+      const historyRes = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/trip/history/${id}`);
+      const historyData = await historyRes.json();
+
+      if (historyData.success) {
+        setCompletedTrips(historyData.data);
+      }
+      
+      const cancleRes = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/trip/cancel/${id}`);
+      const cancleData = await cancleRes.json();
+
+      if(cancleData.success){
+        setCancelledTrip(cancleData.data);
+      }
+
+      setLoading(false);
+
+    } catch (err) {
+      console.log(err);
+      setLoading(false);
+    }
+  }, []);
+
   useFocusEffect(
     useCallback(() => {
-      const loadTrips = async () => {
-      try {
-        const userdata = await AsyncStorage.getItem("userData");
-
-        let id = null; 
-
-        if(userdata) {
-          const user = JSON.parse(userdata);
-          id = user.id;
-          setUserId(id);
-        }
-
-        if (!id) {
-          setLoading(false);
-          return;
-        }
-
-        // ACTIVE TRIP
-        const activeRes = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/trip/active/${id}`);
-        const activeData = await activeRes.json();
-
-        if (activeData.success) {
-          setActiveTrip(activeData.data);
-        }
-        else {
-          setActiveTrip(null);
-        }
-
-        // COMPLETED TRIPS
-        const historyRes = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/trip/history/${id}`);
-        const historyData = await historyRes.json();
-
-        if (historyData.success) {
-          setCompletedTrips(historyData.data);
-        }
-        
-        const cancleRes = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/trip/cancel/${id}`);
-        const cancleData = await cancleRes.json();
-
-        if(cancleData.success){
-          setCancelledTrip(cancleData.data);
-        }
-
-        setLoading(false);
-
-        } catch (err) {
-          console.log(err);
-          setLoading(false);
-        }
-      };
-
       loadTrips();
-    }, [])
+    }, [loadTrips])
   );
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      loadTrips();
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [loadTrips]);
 
   const MAX_VISIBLE_TRIPS = 3;
 
@@ -104,8 +112,8 @@ export default function TripsScreen() {
         <View style={styles.divider} />
 
 
-        <View style={{maxHeight: completedTrips.length > MAX_VISIBLE_TRIPS ? 300 : 'auto' , marginTop : 10}}>
-          <ScrollView>
+        <View style={{maxHeight: completedTrips.length > MAX_VISIBLE_TRIPS ? 300 : undefined , marginTop : 10}}>
+          <ScrollView nestedScrollEnabled>
             {completedTrips.map((trip, index) => (
               <TripCard
                 key={index}
@@ -143,7 +151,7 @@ export default function TripsScreen() {
 }
 
 const styles = StyleSheet.create({
-  SafeAreaView: {backgroundColor: '#B4D8FF'},
+  SafeAreaView: {backgroundColor: '#B4D8FF', flex: 1 },
   scrollContent: { padding: 16 },
   sectionLabel: { fontSize: 18, fontWeight: 'bold', marginBottom: 4 },
   divider: { height: 2, backgroundColor: '#316FB3', marginBottom: 15 }
