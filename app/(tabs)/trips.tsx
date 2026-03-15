@@ -12,6 +12,7 @@ interface Trip {
   start_location: string;
   end_location: string;
   start_time: string;
+  route_code: string;
   status: 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
 }
 
@@ -44,8 +45,8 @@ export default function TripsScreen() {
       const activeRes = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/trip/active/${id}`);
       const activeData = await activeRes.json();
 
-      if (activeData.success) {
-        setActiveTrip(activeData.data);
+      if (activeData.length > 0) {
+        setActiveTrip(activeData[0]);
       }
       else {
         setActiveTrip(null);
@@ -53,18 +54,12 @@ export default function TripsScreen() {
 
       // COMPLETED TRIPS
       const historyRes = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/trip/history/${id}`);
-      const historyData = await historyRes.json();
-
-      if (historyData.success) {
-        setCompletedTrips(historyData.data);
-      }
+      const historyData = await historyRes.json(); 
+      setCompletedTrips(historyData);
       
       const cancleRes = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/trip/cancel/${id}`);
       const cancleData = await cancleRes.json();
-
-      if(cancleData.success){
-        setCancelledTrip(cancleData.data);
-      }
+      setCancelledTrip(cancleData);
 
       setLoading(false);
 
@@ -98,7 +93,7 @@ export default function TripsScreen() {
         {activeTrip && (
           <TripCard 
           id={activeTrip.registration_number}
-          route={activeTrip.start_location + " → " + activeTrip.end_location}
+          route={activeTrip.route_code}
           path={activeTrip.start_location + " to " + activeTrip.end_location}
           date={new Date(activeTrip.start_time).toLocaleDateString()}
           time={new Date(activeTrip.start_time).toLocaleTimeString()}
@@ -118,7 +113,7 @@ export default function TripsScreen() {
               <TripCard
                 key={index}
                 id={trip.registration_number}
-                route={trip.start_location + " → " + trip.end_location}
+                route={trip.route_code}
                 path={trip.start_location + " to " + trip.end_location}
                 date={new Date(trip.start_time).toLocaleDateString()}
                 time={new Date(trip.start_time).toLocaleTimeString()}
@@ -133,7 +128,7 @@ export default function TripsScreen() {
             <TripCard
               key={index}
               id={tripcan.registration_number}
-              route={tripcan.start_location + " → " + tripcan.end_location}
+              route={tripcan.route_code}
               path={tripcan.start_location + " to " + tripcan.end_location}
               date={new Date(tripcan.start_time).toLocaleDateString()}
               time={new Date(tripcan.start_time).toLocaleTimeString()}
