@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet , TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
 
 
 interface TripCardProps {
@@ -8,17 +9,30 @@ interface TripCardProps {
 }
 
 const RouteCard: React.FC<TripCardProps> = ({ RouteNo, route}) => {
-  return (
-    <View style={styles.card}>
 
+  const router = useRouter();
+
+  const handlePress = () => {
+    router.push({
+      pathname: "/routeDetails",
+      params: {
+        routeNo: RouteNo,
+        routeName: route
+      }
+    });
+  };
+
+  return (
+    <TouchableOpacity style={styles.card} onPress={handlePress}>
       <View style={styles.cardHeader}>
         <Text style={styles.busId}>Route {RouteNo}</Text>
       </View>
-      
+
       <View style={styles.infoSection}>
         <Text style={styles.routeText}>{route}</Text>
       </View>
-    </View>
+
+    </TouchableOpacity>
   );
 };
 
