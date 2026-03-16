@@ -14,7 +14,7 @@ export default function RoutesScreen() {
 
       <RouteCard RouteNo="244" route="Negombo → Gampaha" />
       <RouteCard RouteNo="240" route="Negombo → Colombo" />
-      <RouteCard RouteNo="120" route="Colombo → Homagama" />
+      <RouteCard RouteNo="120" route="Colombo to Homagama" />
 
     </View>
   );
