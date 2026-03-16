@@ -1,7 +1,38 @@
-import { View, Text, StyleSheet, TextInput} from 'react-native';
+import { View, Text, StyleSheet, TextInput , ScrollView} from 'react-native';
 import RouteCard from '@/components/RouteCard';
+import { useCallback, useEffect , useState } from 'react';
+import { useFocusEffect } from 'expo-router';
+
+interface Route{
+  route_code : string;
+  start_location : string;
+  end_location : string;
+}
 
 export default function RoutesScreen() {
+
+  const [activeRoute, setActiveRoute] = useState<Route[]>([]);
+
+  const LoadRoute = useCallback(async () => {
+    try{
+      const  getrouteRes = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/passenger/busRoutes`);
+      const data = await getrouteRes.json();
+
+      setActiveRoute(data);
+      
+    }catch (error) {
+      console.log("Error Loading the Routes... this is a custom exeption from the routes.tsx" , error);
+    }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      LoadRoute();
+    }, [LoadRoute])
+
+  );
+
+
   return (
     <View style={styles.container}>
       <TextInput placeholder='Search For Routes...'placeholderTextColor='#727272' style={styles.search}>
@@ -12,9 +43,17 @@ export default function RoutesScreen() {
         <View style={styles.divider}></View>
       </View>
 
-      <RouteCard RouteNo="244" route="Negombo → Gampaha" />
-      <RouteCard RouteNo="240" route="Negombo → Colombo" />
-      <RouteCard RouteNo="120" route="Colombo to Homagama" />
+      <ScrollView nestedScrollEnabled>
+
+        {activeRoute.map((trip, index) => (
+          <RouteCard
+            key={index}
+            RouteNo={trip.route_code}
+            route={`${trip.start_location}  to  ${trip.end_location}`}
+          />
+        ))}
+
+      </ScrollView>
 
     </View>
   );
