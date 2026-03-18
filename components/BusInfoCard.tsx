@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, Animated, Dimensions } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 
 export interface BusData {
+    bus_id: number;
     name: string;
     model: string;
     route: string;
@@ -14,6 +15,8 @@ export interface BusData {
 
     distance?: string;
     passengers?: number;
+
+    heading? : number;
 }
 
 interface BusInfoCardProps {

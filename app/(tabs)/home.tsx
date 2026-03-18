@@ -1,14 +1,68 @@
 import React,{useState, useEffect} from "react";
-import { View, StyleSheet, ActivityIndicator, Text } from "react-native";
-import MapView, {Marker, UrlTile} from "react-native-maps";
+import { View, StyleSheet, ActivityIndicator, Text, Image } from "react-native";
+import MapView, {Marker, UrlTile, AnimatedRegion} from "react-native-maps";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import * as Location from "expo-location";
 
-//importing the BusInfoCard component
+//importing the BusInfoCard component 
 import BusInfoCard, { BusData } from "../../components/BusInfoCard";
 
+const busImages = [
+  require("../../assets/images/green_bus.png"),
+  require("../../assets/images/blue_bus.png"),
+  require("../../assets/images/orange_bus.png"),
+  require("../../assets/images/red_bus.png"),
+]
+
+const AnimatedBusMarker = ({ 
+  bus, 
+  onPress, 
+  busImage
+}: { 
+  bus: BusData; 
+  onPress: (e: any) => void; 
+  busImage: any; 
+}) => {
+  const coordinate = React.useRef(
+    new AnimatedRegion({
+      latitude: bus.latitude,
+      longitude: bus.longitude,
+      latitudeDelta: 0,
+      longitudeDelta: 0,
+    })
+  ).current;
+
+  React.useEffect(() => {
+    // @ts-ignore
+    coordinate.timing({
+      latitude: bus.latitude,
+      longitude: bus.longitude,
+      duration: 1500, 
+      useNativeDriver: false,
+    }).start();
+  }, [bus.latitude, bus.longitude]);
+
+  return (
+    <Marker.Animated
+      // @ts-ignore
+      coordinate={coordinate}
+      zIndex={10}
+      tracksInfoWindowChanges={false}
+      onPress={onPress}
+    >
+      <Image 
+        source={busImage}
+        style={{ width: 30, height: 30 }}
+        resizeMode="contain"
+      />
+    </Marker.Animated>
+  );
+}
+
+ 
 export default function HomeScreen() {
   const [buses, setBuses] = useState<BusData[]>([]);
+  //const [prevBuses, setPrevBuses] = useState<{[key: number]: BusData}>({});
   const [selectedBus, setSelectedBus] = useState<BusData | null>(null);
   const [userLocation, setUserLocation] = useState<Location.LocationObject | null>(null);
   const [loading, setLoading] = useState(true);
@@ -17,17 +71,34 @@ export default function HomeScreen() {
   const API_URL = `${process.env.EXPO_PUBLIC_API_URL}/api/passenger/locations`; //Replace with your actual API endpoint
 
   useEffect(() => {
+    let subscription: Location.LocationSubscription;
+
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
+
       if (status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
         setLoading(false);
         return;
       }
 
-      let location = await Location.getCurrentPositionAsync({});
-      setUserLocation(location);
+      subscription = await Location.watchPositionAsync(
+        {
+          accuracy: Location.Accuracy.High,
+          timeInterval: 3000,
+          distanceInterval: 5
+        },
+        (location) => {
+          setUserLocation(location);
+        }
+      );
     })();
+
+    return () => {
+      if (subscription) {
+        subscription.remove();
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -50,6 +121,42 @@ export default function HomeScreen() {
     return (R * c).toFixed(1); // Distance in km
   };
 
+  /*const getHeading = (
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number
+  ) => {
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+
+    const y = Math.sin(dLon) * Math.cos(lat2 * Math.PI / 180);
+
+    const x = 
+      Math.cos(lat1 * Math.PI / 180) * 
+        Math.sin(lat2 * Math.PI / 180) -
+      Math.sin(lat1 * Math.PI / 180) * 
+        Math.cos(lat2 * Math.PI / 180) *
+        Math.cos(dLon);
+
+    let brng = Math.atan2(y, x);
+
+    brng = brng * (180 / Math.PI);
+
+    return (brng + 360) % 360;
+  }*/
+
+  const getBusImage = (busName: string) => {
+    let hash = 0;
+
+    for (let i = 0; i < busName.length; i++) {
+      hash = busName.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    const index = Math.abs(hash) % busImages.length;
+
+    return busImages[index];
+  }
+
   const fetchAllBuses = async () => {
     try {
       const response = await fetch(API_URL);
@@ -66,21 +173,50 @@ export default function HomeScreen() {
             );
             distanceDisplay = `${km} km away`;
           }
-            return {
-              name: data.name || "Unknown Bus",
-              model: data.model || "Unknown Model",
-              route: data.route || "Unknown Route",
-              start_location: data.start_location || "Unknown Start Location",
-              end_location: data.end_location || "Unknown End Location",
-              price: data.price || 0,
-              latitude: parseFloat(data.latitude),
-              longitude: parseFloat(data.longitude),
-              distance: distanceDisplay,
-              passengers: data.active_passengers,
-            };
+
+          /*
+          const prev = prevBuses[data.bus_id];
+
+          let heading = 0;
+
+          if (prev) {
+            heading = getHeading(
+              prev.latitude,
+              prev.longitude,
+              parseFloat(data.latitude),
+              parseFloat(data.longitude)
+            );
+          }
+          */
+
+          return {
+            bus_id: data.bus_id,
+
+            name: data.name || "Unknown Bus",
+            model: data.model || "Unknown Model",
+            route: data.route || "Unknown Route",
+            start_location: data.start_location || "Unknown Start Location",
+            end_location: data.end_location || "Unknown End Location",
+            price: data.price || 0,
+            latitude: parseFloat(data.latitude),
+            longitude: parseFloat(data.longitude),
+            distance: distanceDisplay,
+            passengers: data.active_passengers,
+
+            //heading
+          };
         });
 
         setBuses(formattedBuses);
+
+        const map:any = {};
+
+        formattedBuses.forEach(b => {
+          map[b.bus_id] = b;
+        });
+
+        //setPrevBuses(map);
+
         setLoading(false);
       }
     }
@@ -117,29 +253,26 @@ export default function HomeScreen() {
               longitude: userLocation.coords.longitude
             }}
             title="Your Location"
+            anchor={{x: 0.5, y: 1}}
           >
             <View style={styles.userMarker}>
-              <Ionicons name="person" size={14} color="white" />
+              <FontAwesome5 name="street-view" size={14} color="white" />
             </View>
           </Marker>
         )}
 
         {/*bus marker*/}
         {buses.map((bus, index) => (
-          <Marker 
-            key={index}
-            coordinate={{ latitude: bus.latitude, longitude: bus.longitude}}
-            zIndex={10}
-            tracksInfoWindowChanges={false}
+          <AnimatedBusMarker
+            key={bus.bus_id}
+            bus={bus}
+            busImage={getBusImage(bus.name)}
+
             onPress={(e) => {
               e.stopPropagation(); 
               setSelectedBus(bus);
             }}
-          >
-            <View style={styles.busMarker}>
-              <FontAwesome5 name="bus" size={16} color="white" />
-            </View>
-          </Marker>
+          />
         ))
         }
       </MapView>
@@ -170,9 +303,6 @@ const styles = StyleSheet.create({
   map: {
     flex: 1,
   },
-  busMarker: {
-    backgroundColor: "#D32F2F", padding: 8, borderRadius: 20, borderWidth: 2, borderColor: "white", elevation: 4,
-  },
   userMarker: {
     backgroundColor: "#0056b3", padding: 8, borderRadius: 20, borderWidth: 2, borderColor: "white", elevation: 4,
   },
@@ -183,5 +313,11 @@ const styles = StyleSheet.create({
   errorContainer: {
     position: "absolute", top: 50, alignSelf: "center", backgroundColor: "red", padding: 10, borderRadius: 5 
   },
-  errorText: {color: "white", fontWeight: "bold"}
+  errorText: {
+    color: "white", fontWeight: "bold"
+  },
+
+  busIcon: {
+    width: 30, height: 30,
+  },
 });
