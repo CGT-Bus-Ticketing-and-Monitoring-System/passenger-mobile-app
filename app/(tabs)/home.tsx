@@ -1,5 +1,5 @@
-import React,{useState, useEffect} from "react";
-import { View, StyleSheet, ActivityIndicator, Text, Image } from "react-native";
+import React,{useState, useEffect, useRef} from "react";
+import { View, StyleSheet, ActivityIndicator, Text, Image, Animated } from "react-native";
 import MapView, {Marker, UrlTile, AnimatedRegion} from "react-native-maps";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import * as Location from "expo-location";
@@ -68,7 +68,25 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  const hintOpacity = useRef(new Animated.Value(0)).current;
+  const hintTranslateY = useRef(new Animated.Value(-20)).current;
+
   const API_URL = `${process.env.EXPO_PUBLIC_API_URL}/api/passenger/locations`; //Replace with your actual API endpoint
+
+  useEffect(() => {
+    Animated.sequence([
+      Animated.delay(2000), 
+      Animated.parallel([   
+        Animated.timing(hintOpacity, { toValue: 1, duration: 600, useNativeDriver: true }),
+        Animated.timing(hintTranslateY, { toValue: 0, duration: 600, useNativeDriver: true })
+      ]),
+      Animated.delay(4000), 
+      Animated.parallel([   
+        Animated.timing(hintOpacity, { toValue: 0, duration: 500, useNativeDriver: true }),
+        Animated.timing(hintTranslateY, { toValue: -20, duration: 500, useNativeDriver: true })
+      ])
+    ]).start();
+  }, []);
 
   useEffect(() => {
     let subscription: Location.LocationSubscription;
@@ -276,8 +294,26 @@ export default function HomeScreen() {
         ))
         }
       </MapView>
+
+      <Animated.View
+        pointerEvents="none" 
+        style={[
+          styles.hintPill, 
+          { 
+            opacity: hintOpacity, 
+            transform: [{ translateY: hintTranslateY }] 
+          }
+        ]}
+      >
+        <FontAwesome5 name="hand-pointer" size={14} color="#00E5FF" style={{ marginRight: 8 }} />
+        <Text style={styles.hintText}>Tap a bus to view live details</Text>
+      </Animated.View>
+
         {/*Bus Card*/}
-        {selectedBus && <BusInfoCard bus={selectedBus} />}
+        <BusInfoCard 
+          bus={selectedBus} 
+          onClose={() => setSelectedBus(null)}
+        />
 
         {/*Loading Indicator*/}
         {loading && buses.length === 0 && (
@@ -319,5 +355,25 @@ const styles = StyleSheet.create({
 
   busIcon: {
     width: 30, height: 30,
+  },
+  hintPill: {
+    position: 'absolute',
+    top: 30, 
+    alignSelf: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(3, 17, 28, 0.85)', 
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 15,
+    elevation: 5,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  hintText: {
+    color: '#E0F7FA',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });

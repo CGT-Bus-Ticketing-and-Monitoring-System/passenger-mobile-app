@@ -14,7 +14,7 @@ export default function HomeHeader() {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="#1f5c9e" />
+            <StatusBar barStyle="light-content" backgroundColor="#022137" />
             <Text style={styles.title}>Bus Buddy</Text>
         </View>
     );
@@ -22,7 +22,7 @@ export default function HomeHeader() {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: "#1f5c9e",
+        backgroundColor: "#022137",
         paddingTop: Platform.OS === "android" ? (StatusBar.currentHeight || 0)  + 10 : 50,
         paddingBottom: 20,
         paddingHorizontal: 20,
