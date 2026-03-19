@@ -44,7 +44,7 @@ export default function StartupScreen() {
 
     return(
         <LinearGradient
-            colors={['#2E94D4', '#004C82']}
+            colors={['#4475A0', '#06202E']}
             style={styles.container}
         >
             <View style={styles.contentContainer}>
