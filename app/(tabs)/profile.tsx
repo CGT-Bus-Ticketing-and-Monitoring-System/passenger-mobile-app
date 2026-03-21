@@ -2,7 +2,7 @@ import React, { useState, useCallback, use } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, RefreshControl, ScrollView, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter, useFocusEffect } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 
 export interface userData {
@@ -138,142 +138,171 @@ export default function ProfileScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.infoSection}>
-        <View style={styles.userInfo}>
+    <LinearGradient colors={['#4475A0', '#06202E']} style={styles.container}>
+      <ScrollView 
+        contentContainerStyle={styles.scrollContainer}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={loadUserData} tintColor="#fff"/>}
+      >
+        <View style={styles.profileCard}>
+          <View style={styles.avatarContainer}>
+            <Ionicons name='person' size={55} color="white" />
+          </View>
+
           <Text style={styles.userName}>
             {user?.first_name ? `${user.first_name} ${user.last_name}` : user?.username || "Passenger"}
           </Text>
           <Text style={styles.cardId}>
             Card ID: {user?.card_uid ? user.card_uid : "No Card Linked"}
           </Text>
-        </View>
 
-        <View style={styles.balanceContainer}>
+          <View style={styles.balanceDivider} />
+
           <Text style={styles.balanceLabel}>Account Balance</Text>
           <Text style={styles.balanceAmount}>
             LKR {user?.balance ? parseFloat(String(user.balance)).toLocaleString('en-US', {maximumFractionDigits: 2, minimumFractionDigits: 2}) : "0.00"}
           </Text>
         </View>
-      </View>
 
-      <View style={styles.menuWrapper}>
-        <ScrollView
-          contentContainerStyle={styles.menuContainer}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={loadUserData} />}
-        >
+        <View style={styles.menuContainer}>
           <TouchableOpacity
-            style={styles.menuCard}
-            onPress={() => router.push('/update_credentials')}
-          >
-            <View>
-              <Text style={styles.menuTitle}>Update Profile</Text>
-              <Text style={styles.menuSubtitle}>Credentials</Text>
-            </View>
-            <Ionicons name='person' size={28} color='black' />
+              style={styles.menuCard}
+              onPress={() => router.push('/analytics')}
+            >
+              <View>
+                <Text style={styles.menuTitle}>My Journey</Text>
+                <Text style={styles.menuSubtitle}>Impact and Analytics</Text>
+              </View>
+            <Ionicons name='stats-chart' size={30} color='white' />
           </TouchableOpacity>
-          
           <TouchableOpacity
-            style={styles.menuCard}
-            onPress={() => router.push('/change_password')}
-          >
-            <View>
-              <Text style={styles.menuTitle}>Change</Text>
-              <Text style={styles.menuSubtitle}>Password</Text>
-            </View>
-            <Ionicons name='shield-checkmark' size={28} color='black' />
-          </TouchableOpacity>
+              style={styles.menuCard}
+              onPress={() => router.push('/update_credentials')}
+            >
+              <View>
+                <Text style={styles.menuTitle}>Update Profile</Text>
+                <Text style={styles.menuSubtitle}>Credentials</Text>
+              </View>
+              <Ionicons name='person' size={30} color='white' />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.menuCard}
+              onPress={() => router.push('/change_password')}
+            >
+              <View>
+                <Text style={styles.menuTitle}>Change</Text>
+                <Text style={styles.menuSubtitle}>Password</Text>
+              </View>
+              <Ionicons name='shield-checkmark' size={30} color='white' />
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.menuCard}
-            onPress={handleLogout}
-          >
-            <View>
-              <Text style={styles.menuTitle}>Logout</Text>
-            </View>
-            <Ionicons name='log-out-outline' size={28} color='black' />
-          </TouchableOpacity>
-        </ScrollView>
-      </View>
-    </View>
+            <TouchableOpacity
+              style={styles.menuCard}
+              onPress={handleLogout}
+            >
+              <View>
+                <Text style={styles.menuTitle}>Logout</Text>
+              </View>
+              <Ionicons name='log-out-outline' size={28} color='white' />
+            </TouchableOpacity>
+        </View>
+
+      </ScrollView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+  },
+  scrollContainer: {
+    padding: 20,
+    paddingTop: 30,
+    paddingBottom: 50,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center', 
   },
-  infoSection: {
-    backgroundColor: 'white',
-    paddingTop: 20,
-    paddingBottom: 30,
-    paddingHorizontal: 25,
+  
+  profileCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.12)', 
+    borderRadius: 20,
+    padding: 30,
+    alignItems: 'center',
+    marginBottom: 30,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.05)',
   },
-  userInfo: {
-    marginBottom: 20,
+  avatarContainer: {
+    backgroundColor: '#0A1520', 
+    width: 90,
+    height: 90,
+    borderRadius: 45,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 15,
   },
   userName: {
-    color: 'black',
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  cardId: {
-    color: '#555',
-    fontSize: 14,
-  },
-  balanceContainer: {
-    marginTop: 10,
-  },
-  balanceLabel: {
-    color: 'black',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  balanceAmount: {
-    color: 'black',
+    color: 'white',
     fontSize: 26,
     fontWeight: 'bold',
+    marginBottom: 5,
+    textAlign: 'center',
+  },
+  cardId: {
+    color: '#B0C4DE', // Light slate text
+    fontSize: 15,
+    textAlign: 'center',
+  },
+  balanceDivider: {
+    height: 1,
+    width: '80%',
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    marginVertical: 20,
+  },
+  balanceLabel: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  balanceAmount: {
+    color: 'white',
+    fontSize: 24,
+    fontWeight: 'bold',
     marginTop: 5,
+    textAlign: 'center',
   },
-  menuWrapper: {
-    flex: 1,
-    backgroundColor: '#CAE3FF',
-  },
+
   menuContainer: {
-    marginTop: 40,
-    padding: 20, 
-    gap: 30,
+    gap: 15, 
   },
   menuCard: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    paddingVertical: 30,
+    backgroundColor: '#487386', 
+    borderRadius: 15,
+    paddingVertical: 25,
     paddingHorizontal: 25,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    elevation: 2,
+    elevation: 4,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
     shadowRadius: 4,
   },
   menuTitle: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: 'bold',
-    color: '#000',
+    color: 'white',
   },
   menuSubtitle: {
     fontSize: 16, 
     fontWeight: '400',
-    color: '#333',
+    color: '#E0F7FA', // Slightly muted white for the subtitle
+    marginTop: 2,
   }
 });
 

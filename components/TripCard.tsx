@@ -44,12 +44,11 @@ const TripCard: React.FC<TripCardProps> = ({ id, route, path, date, time, status
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: 'white',
+    backgroundColor: 'rgba(182, 249, 255, 0.29)',
     borderRadius: 18,
     padding: 16,
     marginBottom: 12,
-    elevation: 2,
-    shadowColor: '#000',
+    shadowColor: '#4dccb7',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
@@ -63,7 +62,7 @@ const styles = StyleSheet.create({
   busId: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#000',
+    color: 'white',
   },
   statusBadge: {
     paddingHorizontal: 12,
@@ -74,6 +73,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 12,
     fontWeight: '600',
+    textTransform: 'capitalize',
   },
   infoSection: {
     gap: 2, // Spacing between text lines
@@ -81,14 +81,15 @@ const styles = StyleSheet.create({
   routeText: {
     fontSize: 15,
     fontWeight: '600',
+    color: 'white'
   },
   pathText: {
     fontSize: 14,
-    color: '#444',
+    color: 'white',
   },
   detailsText: {
     fontSize: 13,
-    color: '#000',
+    color: 'white',
   },
 });
 
