@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityInd
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter, Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 
 interface passwordInputProps {
   label: string;
@@ -24,6 +25,7 @@ const PasswordInput = ({ label, value, onChange, show, setShow, placeholder }: p
           value={value}
           onChangeText={onChange}
           placeholder={placeholder}
+          placeholderTextColor="rgba(255, 255, 255, 0.5)"
         />
         <TouchableOpacity
           style={styles.eyeIcon}
@@ -32,7 +34,7 @@ const PasswordInput = ({ label, value, onChange, show, setShow, placeholder }: p
           <Ionicons
             name={show ? "eye-off" : "eye"}
             size={24}
-            color="#555"
+            color="rgba(255, 255, 255, 0.7)"
           />
         </TouchableOpacity>
       </View>
@@ -108,118 +110,119 @@ export default function ChangePasswordScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
-    >
-
-    <Stack.Screen options={{headerTitle:"Update Password"}} />
-
-    <ScrollView contentContainerStyle={styles.scrollContent}>
-
-      <Text style={styles.headerTitle}>Update Passwords</Text>
-
-      <PasswordInput
-        label="Enter Current Password"
-        value={currentPassword}
-        onChange={setCurrentPassword}
-        show={showCurrent}
-        setShow={setShowCurrent}
-        placeholder=""
-      />
-
-      <PasswordInput
-        label="Enter New Password"
-        value={newPassword}
-        onChange={setNewPassword}
-        show={showNew}
-        setShow={setShowNew}
-        placeholder=""
-      />
-
-      <PasswordInput
-        label="Confirm New Password"
-        value={confirmPassword}
-        onChange={setConfirmPassword}
-        show={showConfirm}
-        setShow={setShowConfirm}
-        placeholder=""
-      />
-
-      <TouchableOpacity
-        style={styles.saveButton}
-        onPress={handleChangePassword}
-        disabled={loading}
+    <LinearGradient colors={['#4475A0', '#06202E']} style={styles.gradientBackground}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.container}
       >
-        {loading ? (
-          <ActivityIndicator color="white" />
-        ) : (
-          <Text style={styles.saveButtonText}>Change Password</Text>
-        )}
-      </TouchableOpacity>
 
-    </ScrollView>
-    </KeyboardAvoidingView>
+      <Stack.Screen options={{
+        headerTitle:"Update Password",
+        headerStyle: { backgroundColor: '#022137' },
+        headerTintColor: '#fff',
+        headerShadowVisible: false,
+      }} />
+
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+
+        <PasswordInput
+          label="Enter Current Password"
+          value={currentPassword}
+          onChange={setCurrentPassword}
+          show={showCurrent}
+          setShow={setShowCurrent}
+          placeholder=""
+        />
+
+        <PasswordInput
+          label="Enter New Password"
+          value={newPassword}
+          onChange={setNewPassword}
+          show={showNew}
+          setShow={setShowNew}
+          placeholder=""
+        />
+
+        <PasswordInput
+          label="Confirm New Password"
+          value={confirmPassword}
+          onChange={setConfirmPassword}
+          show={showConfirm}
+          setShow={setShowConfirm}
+          placeholder=""
+        />
+
+        <TouchableOpacity
+          style={styles.saveButton}
+          onPress={handleChangePassword}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text style={styles.saveButtonText}>Change Password</Text>
+          )}
+        </TouchableOpacity>
+
+      </ScrollView>
+      </KeyboardAvoidingView>
+    </LinearGradient>
   )
 }
 
 const styles = StyleSheet.create({
+  gradientBackground: {
+    flex: 1,
+  },
   container: { 
     flex: 1,
-    backgroundColor: '#BFE0FF'  
   },
   scrollContent: {
     padding: 25,
-    paddingTop: 50,
-  },
-  headerTitle: {
-    fontSize: 24,
-    color: '#0F4C81',
-    fontWeight: 'bold',
-    marginBottom: 30,
-    opacity: 0.6,
-    textAlign: 'center',
+    paddingTop: '40%',
   },
   inputGroup: {
     marginBottom: 20,
   },
   label: {
     fontSize: 16,
-    color: '#000',
+    color: 'white',
     marginBottom: 10,
     fontWeight: '500',
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'white',
-    borderRadius: 10,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    backgroundColor: 'rgba(174, 184, 191, 0.49)',
+    borderWidth: 1,
+    borderColor: 'white',
+    borderRadius: 12,
+    shadowColor: '#26aab3',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
   },
   input: {
     flex: 1,
-    padding: 15,
+    paddingVertical: 20,
+    paddingHorizontal: 15,
     fontSize: 16,
-    color: '#000',
+    color: 'white',
   },
   eyeIcon: {
     padding: 15,
   },
   saveButton: {
-    backgroundColor: '#3EA6FF',
-    padding: 15,
-    borderRadius: 10,
+    backgroundColor: '#022137',
+    borderRadius: 12,
+    paddingVertical: 16,
     alignItems: 'center',
-    marginTop: 30,
+    marginTop: 20,
     elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2},
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
+    shadowColor: '#26aab3',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
   },
   saveButtonText: {
     color: 'white',

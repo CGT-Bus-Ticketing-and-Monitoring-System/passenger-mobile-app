@@ -39,27 +39,22 @@ const RouteCard: React.FC<TripCardProps> = ({ RouteNo, route}) => {
 const styles = StyleSheet.create({
 
   card: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 18,
+    backgroundColor: 'rgba(182, 249, 255, 0.29)',
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    padding: 20,
     marginBottom: 15,
-
-    elevation: 3,
-
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
   },
 
   cardHeader: {
-    marginBottom: 6,
+    marginBottom: 4,
   },
 
   busId: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
-    color: '#000',
+    color: 'white',
   },
 
   infoSection: {
@@ -69,7 +64,7 @@ const styles = StyleSheet.create({
   routeText: {
     fontSize: 15,
     fontWeight: '400',
-    color: '#333',
+    color: '#E0F7FA',
   },
 
 });

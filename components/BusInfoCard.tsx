@@ -159,6 +159,8 @@ const styles = StyleSheet.create({
     },
     header: {
         backgroundColor: "rgba(255, 255, 255, 0.15)", 
+        borderWidth: 2,
+        borderColor: '#44dccf4f',
         borderRadius: 15,
         padding: 20,
         flexDirection: "row",

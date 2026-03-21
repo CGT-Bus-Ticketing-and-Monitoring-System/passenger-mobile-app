@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from 'expo-router';
 import { useCallback } from 'react';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface Trip {
   registration_number: string;
@@ -86,68 +87,72 @@ export default function TripsScreen() {
   const MAX_VISIBLE_TRIPS = 3;
 
   return (
-    <SafeAreaView style={styles.SafeAreaView}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.sectionLabel}>Active Trips</Text>
-        <View style={styles.divider} />
-        {activeTrip && (
-          <TripCard 
-          id={activeTrip.registration_number}
-          route={activeTrip.route_code}
-          path={activeTrip.start_location + " to " + activeTrip.end_location}
-          date={new Date(activeTrip.start_time).toLocaleDateString()}
-          time={new Date(activeTrip.start_time).toLocaleTimeString()}
-          status={activeTrip.status}
-          />
-        )}
+    <LinearGradient colors={['#4475A0', '#06202E']} style={styles.container}>
+      <SafeAreaView style={styles.SafeAreaView}>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <Text style={styles.sectionLabel}>Active Trips</Text>
+          <View style={styles.divider} />
+          {activeTrip && (
+            <TripCard 
+            id={activeTrip.registration_number}
+            route={activeTrip.route_code}
+            path={activeTrip.start_location + " to " + activeTrip.end_location}
+            date={new Date(activeTrip.start_time).toLocaleDateString()}
+            time={new Date(activeTrip.start_time).toLocaleTimeString()}
+            status={activeTrip.status}
+            />
+          )}
 
-        {!activeTrip && !loading && <Text>No active trips at the moment.</Text>}
+          {!activeTrip && !loading && <Text style={styles.noTripsText}>No active trips at the moment.</Text>}
 
-        <Text style={[styles.sectionLabel, { marginTop: 23 }]}>Recent Trip History</Text>
-        <View style={styles.divider} />
+          <Text style={[styles.sectionLabel, { marginTop: 23 }]}>Recent Trip History</Text>
+          <View style={styles.divider} />
 
 
-        <View style={{maxHeight: completedTrips.length > MAX_VISIBLE_TRIPS ? 300 : undefined , marginTop : 10}}>
-          <ScrollView nestedScrollEnabled>
-            {completedTrips.map((trip, index) => (
+          <View style={{maxHeight: completedTrips.length > MAX_VISIBLE_TRIPS ? 300 : undefined , marginTop : 10}}>
+            <ScrollView nestedScrollEnabled>
+              {completedTrips.map((trip, index) => (
+                <TripCard
+                  key={index}
+                  id={trip.registration_number}
+                  route={trip.route_code}
+                  path={trip.start_location + " to " + trip.end_location}
+                  date={new Date(trip.start_time).toLocaleDateString()}
+                  time={new Date(trip.start_time).toLocaleTimeString()}
+                  status={trip.status}
+                  />
+                ))}
+            </ScrollView>
+          </View>
+
+          <View style={{marginTop : 30 , marginBottom : 10}}>
+            {cancelledTrips.map((tripcan, index) => (
               <TripCard
                 key={index}
-                id={trip.registration_number}
-                route={trip.route_code}
-                path={trip.start_location + " to " + trip.end_location}
-                date={new Date(trip.start_time).toLocaleDateString()}
-                time={new Date(trip.start_time).toLocaleTimeString()}
-                status={trip.status}
-                />
-              ))}
-          </ScrollView>
-        </View>
+                id={tripcan.registration_number}
+                route={tripcan.route_code}
+                path={tripcan.start_location + " to " + tripcan.end_location}
+                date={new Date(tripcan.start_time).toLocaleDateString()}
+                time={new Date(tripcan.start_time).toLocaleTimeString()}
+                status={tripcan.status}
+              />
 
-        <View style={{marginTop : 30 , marginBottom : 10}}>
-          {cancelledTrips.map((tripcan, index) => (
-            <TripCard
-              key={index}
-              id={tripcan.registration_number}
-              route={tripcan.route_code}
-              path={tripcan.start_location + " to " + tripcan.end_location}
-              date={new Date(tripcan.start_time).toLocaleDateString()}
-              time={new Date(tripcan.start_time).toLocaleTimeString()}
-              status={tripcan.status}
-            />
-
-          ))}
-        </View>
+            ))}
+          </View>
 
 
 
-      </ScrollView>
-    </SafeAreaView>
+        </ScrollView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  SafeAreaView: {backgroundColor: '#B4D8FF', flex: 1 },
+  container: {flex: 1},
+  SafeAreaView: {flex: 1 },
   scrollContent: { padding: 16 },
-  sectionLabel: { fontSize: 18, fontWeight: 'bold', marginBottom: 4 },
-  divider: { height: 2, backgroundColor: '#316FB3', marginBottom: 15 }
+  sectionLabel: { fontSize: 18, fontWeight: 'bold', marginBottom: 4, color: 'white' },
+  divider: { height: 2, backgroundColor: '#44DCD0', marginBottom: 15 },
+  noTripsText: { color: '#E0F7FA', fontStyle: 'italic' }
 });

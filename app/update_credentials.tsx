@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter, Stack } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
 
 import ProfileScreen, {userData} from "./(tabs)/profile";
 
@@ -81,99 +82,106 @@ export default function UpdateCredentialsScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
-    >
-      <Stack.Screen options={{headerTitle:"Update Credentials"}} />
+    <LinearGradient colors={['#4475A0', '#06202E']} style={styles.gradientBackground}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.container}
+      >
+        <Stack.Screen options={{
+          headerTitle:"Update Credentials",
+          headerStyle: {backgroundColor: '#022137'},
+          headerTintColor: '#fff',
+          headerShadowVisible: false
+        }} />
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.screenTitle}>Update Profile</Text>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
 
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>First Name</Text>
-          <TextInput 
-            style={styles.input}
-            value={form.first_name}
-            onChangeText={(text) => setForm({...form, first_name: text})}
-            placeholder="Enter First Name"
-          />
-        </View>
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>First Name</Text>
+            <TextInput 
+              style={styles.input}
+              value={form.first_name}
+              onChangeText={(text) => setForm({...form, first_name: text})}
+              placeholder="Enter First Name"
+              placeholderTextColor="rgba(255, 255, 255, 0.5)"
+            />
+          </View>
 
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Last Name</Text>
-          <TextInput 
-            style={styles.input}
-            value={form.last_name}
-            onChangeText={(text) => setForm({...form, last_name: text})}
-            placeholder="Enter Last Name"
-          />
-        </View>
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Last Name</Text>
+            <TextInput 
+              style={styles.input}
+              value={form.last_name}
+              onChangeText={(text) => setForm({...form, last_name: text})}
+              placeholder="Enter Last Name"
+              placeholderTextColor="rgba(255, 255, 255, 0.5)"
+            />
+          </View>
 
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Username</Text>
-          <TextInput 
-            style={[styles.input, styles.disabledInput]}
-            value={form.username}
-            editable={false}
-          />
-        </View>
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Username</Text>
+            <TextInput 
+              style={[styles.input, styles.disabledInput]}
+              value={form.username}
+              editable={false}
+              placeholderTextColor="rgba(255, 255, 255, 0.5)"
+            />
+          </View>
 
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Phone</Text>
-          <TextInput 
-            style={styles.input}
-            value={form.phone}
-            keyboardType="phone-pad"
-            onChangeText={(text) => setForm({...form, phone: text})}
-            placeholder="07X XXX XXXX"
-          />
-        </View>
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Phone</Text>
+            <TextInput 
+              style={styles.input}
+              value={form.phone}
+              keyboardType="phone-pad"
+              onChangeText={(text) => setForm({...form, phone: text})}
+              placeholder="07X XXX XXXX"
+              placeholderTextColor="rgba(255, 255, 255, 0.5)"
+            />
+          </View>
 
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput 
-            style={styles.input}
-            value={form.email}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            onChangeText={(text) => setForm({...form, email: text})}
-            placeholder="example@gmail.com"
-          />
-        </View>
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Email</Text>
+            <TextInput 
+              style={styles.input}
+              value={form.email}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              onChangeText={(text) => setForm({...form, email: text})}
+              placeholder="example@gmail.com"
+              placeholderTextColor="rgba(255, 255, 255, 0.5)"
+            />
+          </View>
 
-        <TouchableOpacity
-          style={styles.updateButton}
-          onPress={handleUpdate}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <Text style={styles.buttonText}>Update Credentials</Text>
-          )}
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.updateButton}
+            onPress={handleUpdate}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <Text style={styles.buttonText}>Update Credentials</Text>
+            )}
+          </TouchableOpacity>
 
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
+  gradientBackground: {
+    flex: 1
+  },
   container: {
     flex: 1,
-    backgroundColor: '#BFE0FF',
   },
   scrollContent: {
     padding: 25,
     paddingTop: 60,
-  },
-  screenTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#0F4C81',
-    marginBottom: 30,
-    textAlign: 'center',
+    paddingBottom: 50,
   },
   formGroup: {
     marginBottom: 20,
@@ -181,38 +189,36 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: 600,
-    color: '#1a1a1a',
+    color: 'white',
     marginBottom: 8,
     marginLeft: 4,
   },
   input: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    paddingVertical: 12,
+    backgroundColor: 'rgba(174, 184, 191, 0.49)',
+    borderWidth: 1,
+    borderColor: 'white',
+    borderRadius: 15,
+    paddingVertical: 20,
     paddingHorizontal: 15,
     fontSize: 16,
-    color: '#000',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    color: 'white',
+    elevation: 0,
   },
   disabledInput: {
-    backgroundColor: '#EBEBEB',
-    color: '#777',
+    backgroundColor: 'rgba(174, 184, 191, 0.49)',
+    color: 'white',
   },
   updateButton: {
-    backgroundColor: '#3EA6FF',
+    backgroundColor: '#022137',
     borderRadius: 12,
     paddingVertical: 16,
     alignItems: 'center',
     marginTop: 20,
     elevation: 4,
-    shadowColor: '#000',
+    shadowColor: '#26aab3',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
   },
   buttonText: {
     color: 'white',
