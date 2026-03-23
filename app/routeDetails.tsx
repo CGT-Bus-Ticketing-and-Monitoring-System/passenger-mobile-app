@@ -1,17 +1,43 @@
-import React from 'react';
-import { View, Text, StyleSheet , FlatList , TouchableOpacity } from 'react-native';
-import { useLocalSearchParams , useRouter } from 'expo-router';
+import React, { useState, useCallback } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import UpcomingBusCard from '@/components/UpcommingBusCard';
+
+interface BusSchedule {
+  schedule_id: number;
+  bus_id: number;
+  departure_time: string;
+  arrival_time: string;
+  direction: string;
+}
 
 export default function RouteDetails() {
   const router = useRouter();
-  const { routeNo, routeName , base_fare} = useLocalSearchParams();
+  const { routeNo, routeName, base_fare, route_id } = useLocalSearchParams();
+  const [busSchedule, setBusSchedule] = useState<BusSchedule[]>([]);
 
+  const LoadBusSch = useCallback(async () => {
+    try {
+      // Use the actual route_id from params in the URL
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/passenger/busSchedule/${route_id}`);
+      const data = await response.json();
+      setBusSchedule(data);
+      console.log(route_id);
+    } catch (error) {
+      console.log("Error Loading Bus Schedule:", error);
+    }
+  }, [route_id]);
+
+  useFocusEffect(
+    useCallback(() => {
+      LoadBusSch();
+    }, [LoadBusSch])
+  );
 
   return (
     <LinearGradient colors={['#4475A0', '#06202E']} style={styles.container}>
-
       <View style={styles.topSection}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name='arrow-back' size={24} color="white" />
@@ -24,21 +50,33 @@ export default function RouteDetails() {
               <Text style={styles.title}>Route {routeNo}</Text>
               <Text style={styles.subtitle}>{routeName}</Text>
             </View>
-
-            <Ionicons name='trail-sign' size={70} color="#3098B2" style={styles.routeIcon}/>
+            <Ionicons name='trail-sign' size={70} color="#3098B2" style={styles.routeIcon} />
           </View>
-          <Text style={styles.fare}>Base Fare : {base_fare} </Text>
+          <Text style={styles.fare}>Base Fare : LKR {base_fare}</Text>
         </View>
       </View>
+
       <View style={styles.bottomSection}>
-        <Text style={styles.sectionHeader}>Active Buses In The Selected Route</Text>
+        <Text style={styles.sectionHeader}>Upcoming Buses</Text>
         <View style={styles.divider} />
-        
+
+        <FlatList
+          data={busSchedule}
+          keyExtractor={(item) => item.schedule_id.toString()}
+          renderItem={({ item }) => (
+            <UpcomingBusCard
+              busId={item.bus_id}
+              departure={item.departure_time}
+              arrival={item.arrival_time}
+              direction={item.direction}
+            />
+          )}
+          ListEmptyComponent={<Text style={{color: 'white', textAlign: 'center'}}>No active buses found.</Text>}
+        />
       </View>
     </LinearGradient>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

@@ -7,9 +7,10 @@ interface TripCardProps {
   RouteNo: string;
   route: string;
   base_fare: number;
+  route_id : number;
 }
 
-const RouteCard: React.FC<TripCardProps> = ({ RouteNo, route , base_fare}) => {
+const RouteCard: React.FC<TripCardProps> = ({ RouteNo, route , base_fare, route_id}) => {
 
   const router = useRouter();
 
@@ -20,6 +21,7 @@ const RouteCard: React.FC<TripCardProps> = ({ RouteNo, route , base_fare}) => {
         routeNo: RouteNo,
         routeName: route,
         base_fare: base_fare,
+        route_id : route_id,
       }
     });
   };
