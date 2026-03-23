@@ -6,21 +6,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 export default function RouteDetails() {
   const router = useRouter();
-  const { routeNo, routeName } = useLocalSearchParams();
+  const { routeNo, routeName , base_fare} = useLocalSearchParams();
 
-  const buses = [
-    {id : '1' , plate: 'kv145', model: 'toyota' , passengers : 25},
-    {id : '2' , plate: 'kv165', model: 'toyota' , passengers : 55},
-    {id : '3' , plate: 'kv155', model: 'toyota' , passengers : 75},
-  ];
-
-  const renderBusCard = ({item}) => (
-    <View style={styles.card}>
-      <Text style={styles.busPlate}>{item.plate}</Text>
-      <Text style={styles.busDetail}><Text style={{fontWeight: 'bold'}}>Model :</Text>{item.model}</Text>
-      <Text style={styles.busDetail}>{item.passengers}</Text>
-    </View>
-  );
 
   return (
     <LinearGradient colors={['#4475A0', '#06202E']} style={styles.container}>
@@ -40,21 +27,12 @@ export default function RouteDetails() {
 
             <Ionicons name='trail-sign' size={70} color="#3098B2" style={styles.routeIcon}/>
           </View>
-          <Text style={styles.fare}>Base Fare: LKR 200.00</Text>
+          <Text style={styles.fare}>Base Fare : {base_fare} </Text>
         </View>
       </View>
-
       <View style={styles.bottomSection}>
         <Text style={styles.sectionHeader}>Active Buses In The Selected Route</Text>
         <View style={styles.divider} />
-
-        <FlatList        
-          data={buses}
-          keyExtractor={(item) => item.id}
-          renderItem = {renderBusCard}
-          contentContainerStyle={{paddingBottom : 20}}
-          showsVerticalScrollIndicator={false}
-        />
         
       </View>
     </LinearGradient>

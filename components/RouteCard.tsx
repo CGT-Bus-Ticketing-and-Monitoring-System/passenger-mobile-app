@@ -6,9 +6,10 @@ import { useRouter } from 'expo-router';
 interface TripCardProps {
   RouteNo: string;
   route: string;
+  base_fare: number;
 }
 
-const RouteCard: React.FC<TripCardProps> = ({ RouteNo, route}) => {
+const RouteCard: React.FC<TripCardProps> = ({ RouteNo, route , base_fare}) => {
 
   const router = useRouter();
 
@@ -17,7 +18,8 @@ const RouteCard: React.FC<TripCardProps> = ({ RouteNo, route}) => {
       pathname: "/routeDetails",
       params: {
         routeNo: RouteNo,
-        routeName: route
+        routeName: route,
+        base_fare: base_fare,
       }
     });
   };
