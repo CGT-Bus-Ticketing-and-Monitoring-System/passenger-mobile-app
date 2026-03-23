@@ -8,6 +8,8 @@ interface Route{
   route_code : string;
   start_location : string;
   end_location : string;
+  base_fare : number;
+  route_id : number;
 }
 
 export default function RoutesScreen() {
@@ -51,6 +53,8 @@ export default function RoutesScreen() {
             key={index}
             RouteNo={trip.route_code}
             route={`${trip.start_location} to ${trip.end_location}`}
+            base_fare={trip.base_fare}
+            route_id={trip.route_id}
           />
         ))}
 
