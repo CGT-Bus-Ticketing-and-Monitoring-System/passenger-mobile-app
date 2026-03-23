@@ -3,6 +3,7 @@ import { View, StyleSheet, ActivityIndicator, Text, Image, Animated } from "reac
 import MapView, {Marker, UrlTile, AnimatedRegion} from "react-native-maps";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import * as Location from "expo-location";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 //importing the BusInfoCard component 
 import BusInfoCard, { BusData } from "../../components/BusInfoCard";
@@ -67,11 +68,36 @@ export default function HomeScreen() {
   const [userLocation, setUserLocation] = useState<Location.LocationObject | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [activeTrip, setActiveTrip] = useState(null);
 
   const hintOpacity = useRef(new Animated.Value(0)).current;
   const hintTranslateY = useRef(new Animated.Value(-20)).current;
 
   const API_URL = `${process.env.EXPO_PUBLIC_API_URL}/api/passenger/locations`; //Replace with your actual API endpoint
+
+  const fetchActiveTrip = async () => {
+    try {
+      const userdata = await AsyncStorage.getItem("userData");
+      if (!userdata) return;
+
+      const user = JSON.parse(userdata);
+
+      const res = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/api/trip/active/${user.id}`
+      );
+
+      const data = await res.json();
+
+      setActiveTrip(data.length > 0 ? data[0] : null);
+    } catch (e) {}
+  };
+
+  useEffect(() => {
+    fetchActiveTrip();
+    const interval = setInterval(fetchActiveTrip, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
 
   useEffect(() => {
     Animated.sequence([
@@ -264,7 +290,7 @@ export default function HomeScreen() {
         />
 
         {/*user marker*/}
-        {userLocation && (
+        {userLocation && !activeTrip && (
           <Marker 
             coordinate={{
               latitude: userLocation.coords.latitude,
@@ -308,6 +334,23 @@ export default function HomeScreen() {
         <FontAwesome5 name="hand-pointer" size={14} color="#00E5FF" style={{ marginRight: 8 }} />
         <Text style={styles.hintText}>Tap a bus to view live details</Text>
       </Animated.View>
+
+        {activeTrip && (
+          <View style={{
+            position: "absolute",
+            top: 80,
+            alignSelf: "center",
+            backgroundColor: "#193d58",
+            paddingVertical: 15,
+            paddingHorizontal: 25,
+            borderRadius: 20,
+            elevation: 5
+          }}>
+            <Text style={{ color: "white", fontWeight: "bold" }}>
+              Trip Started
+            </Text>
+          </View>
+        )}
 
         {/*Bus Card*/}
         <BusInfoCard 
