@@ -7,7 +7,7 @@ import UpcomingBusCard from '@/components/UpcommingBusCard';
 
 interface BusSchedule {
   schedule_id: number;
-  bus_id: number;
+  bus_reg_no: string;
   departure_time: string;
   arrival_time: string;
   direction: string;
@@ -23,6 +23,11 @@ export default function RouteDetails() {
       // Use the actual route_id from params in the URL
       const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/passenger/busSchedule/${route_id}`);
       const data = await response.json();
+
+      console.log("========== BUS DATA ==========");
+      console.log(JSON.stringify(data, null, 2));
+      console.log("================================");
+
       setBusSchedule(data);
       console.log(route_id);
     } catch (error) {
@@ -65,7 +70,7 @@ export default function RouteDetails() {
           keyExtractor={(item) => item.schedule_id.toString()}
           renderItem={({ item }) => (
             <UpcomingBusCard
-              busId={item.bus_id}
+              BusRegNo={item.bus_reg_no}
               departure={item.departure_time}
               arrival={item.arrival_time}
               direction={item.direction}
