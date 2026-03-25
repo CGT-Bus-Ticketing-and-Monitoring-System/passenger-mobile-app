@@ -290,7 +290,7 @@ export default function HomeScreen() {
         />
 
         {/*user marker*/}
-        {userLocation && !activeTrip && (
+        {userLocation && (
           <Marker 
             coordinate={{
               latitude: userLocation.coords.latitude,
