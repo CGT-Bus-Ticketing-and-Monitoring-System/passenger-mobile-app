@@ -3,17 +3,17 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 interface BusScheduleProps {
-  busId: number;
+  BusRegNo : string;
   departure: string;
   arrival: string;
   direction: string;
 }
 
-const UpcomingBusCard: React.FC<BusScheduleProps> = ({ busId, departure, arrival, direction }) => {
+const UpcomingBusCard: React.FC<BusScheduleProps> = ({ BusRegNo, departure, arrival, direction }) => {
   return (
     <View style={styles.card}>
       <View style={styles.headerRow}>
-        <Text style={styles.busPlate}>Bus ID: {busId}</Text>
+        <Text style={styles.busPlate}>Bus Num: {BusRegNo}</Text>
         <View style={[styles.badge, direction === 'RETURN' ? styles.returnBadge : styles.forwardBadge]}>
           <Text style={styles.badgeText}>{direction}</Text>
         </View>
