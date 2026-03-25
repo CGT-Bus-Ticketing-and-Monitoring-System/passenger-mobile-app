@@ -24,9 +24,9 @@ export default function RouteDetails() {
       const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/passenger/busSchedule/${route_id}`);
       const data = await response.json();
 
-      console.log("========== BUS DATA ==========");
+      console.log("========== BUS DATA =========");
       console.log(JSON.stringify(data, null, 2));
-      console.log("================================");
+      console.log("=============================");
 
       setBusSchedule(data);
       console.log(route_id);
